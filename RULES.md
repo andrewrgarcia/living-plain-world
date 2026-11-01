@@ -114,6 +114,12 @@ correct a mistake, straighten what drifted, or add what he sees fit.
 
 - An intervention is an ordinary commit to the world, authored by him. It
   passes the same gate as any day (compile, report, the viewer loads).
+- **An intervention does not make a day.** Its title never starts with
+  "Day N:"; it belongs to the day it was made on, and the chronicle lists it
+  under that day, credited to The Architect. Only the engine's daily commit
+  (built or skipped) advances the count. This keeps provenance: every day
+  number is one engine day, and what The Architect touched is visible within
+  it.
 - The engine never pauses for him and never undoes him: tomorrow's planner
   reads his change like any other and builds on it.
 - Nothing is hidden. Every change, his or the engine's, is in the chronicle.
