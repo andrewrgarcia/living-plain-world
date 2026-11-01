@@ -5,6 +5,7 @@
 // never the whole world.
 //
 //   node tools/view.mjs [--root DIR]                    the view (markdown)
+//        (the day number is one past the highest "Day N:" commit subject)
 //   node tools/view.mjs spots <chunk> <sx>x<sz> [--root DIR]
 //        fair spots in a chunk for a footprint sx × sz meters (along x and z
 //        once it is turned the way it will face), centered on its floor
@@ -62,13 +63,15 @@ function history(n) {
   } catch { return [] }
 }
 
-/** today's day number, by the chronicle's rule (calendar days since the first commit) */
-function today() {
-  let first
-  try { first = execFileSync("git", ["-C", ROOT, "log", "--reverse", "--format=%aI", "--", "world"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).split("\n")[0] } catch { first = "" }
-  const d = (iso) => Date.parse(iso.slice(0, 10) + "T00:00:00Z")
-  const now = new Date().toISOString()
-  return first ? Math.max(0, Math.round((d(now) - d(first)) / 86400000)) : 0
+/** the next day's number: one past the highest "Day N:" in the history (days are
+ *  counted by the world's own days, not the calendar: inceptions may run
+ *  several times in an afternoon, and a skipped day still counts) */
+function nextDay() {
+  let raw = ""
+  try { raw = execFileSync("git", ["-C", ROOT, "log", "--format=%s"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }) } catch {}
+  let hi = -1
+  for (const l of raw.split("\n")) { const m = l.match(/^Day (\d+):/); if (m) hi = Math.max(hi, +m[1]) }
+  return hi + 1
 }
 
 function fmt(b) { return `x ${b.x0.toFixed(1)}..${b.x1.toFixed(1)}, z ${b.z0.toFixed(1)}..${b.z1.toFixed(1)}, ${(b.y1).toFixed(1)} m tall` }
@@ -110,15 +113,15 @@ function spots(k, sx, sz) {
 // ── the view ───────────────────────────────────────────────────────────
 
 function view() {
-  const day = today()
+  const day = nextDay()
   const hist = history(30)
   const todayISO = new Date().toISOString().slice(0, 10)
   const builtToday = hist.some((h) => h.who === "the Actions" && h.date.slice(0, 10) === todayISO)
   const L = []
   L.push(`# The plain, as the planner sees it`)
   L.push("")
-  L.push(`- today: day ${day}${day > 0 && day % 7 === 0 ? " — **a seventh day**: one structural move is allowed (RULES.md)" : ""}`)
-  if (builtToday) L.push(`- **the Actions already built today**: do nothing, end the run`)
+  L.push(`- today is day ${day} (one past the last "Day N:" in the history)${day > 0 && day % 7 === 0 ? " — **a seventh day**: one structural move is allowed (RULES.md)" : ""}`)
+  if (builtToday) L.push(`- **the Actions already built today** (calendar, UTC): in live mode, do nothing and end the run; inceptions may run again`)
   L.push(`- terrain v${index.terrain}, chunks of ${index.chunk} m; built chunks: ${[...built].join(", ")}`)
   L.push(`- an ordinary day builds in one of: ${reachable().join(", ")}`)
   L.push(`- kept clear (world x, z): ${P.RESERVED.map((r) => `${r.name} ${r.x0}..${r.x1}, ${r.z0}..${r.z1}`).join("; ")}`)
