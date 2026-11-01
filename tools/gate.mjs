@@ -23,8 +23,10 @@
 //   inside    every built thing's footprint is inside its chunk, ≥ 1 m from the edges
 //   ice       no footprint touches the frozen river
 //   slope     the ground under a footprint varies by at most 1.5 m
-//   plinth    a thing reaches down at least as far as the ground falls under it
-//             (so its downhill side never floats once it is set on the highest ground)
+//   plinth    a thing reaches down at least as far as the ground falls under it,
+//             less 10 cm (so its downhill side never floats more than a hand's
+//             width once it is set on the highest ground; on ground that falls
+//             under 10 cm, nothing is needed)
 //   grain     every thing defined in a chunk or the library (but the Chunk
 //             itself) sets its own `resolve grain`: under the chunk's coarse
 //             0.5 m grain, parts thinner than ~0.25 m mesh to nothing
@@ -132,7 +134,7 @@ function checkChunk(key) {
     if (fall > LIMITS.slope) steep.push(`${name}: ground falls ${fall.toFixed(2)} m under it`)
     // the floor is at y = 0 (placed by its floor on the Plot); it reaches down to b.y0
     const depth = -b.y0
-    if (depth + 1e-6 < fall + LIMITS.plinthSlack) shallow.push(`${name} reaches ${depth.toFixed(2)} m below its floor, ground falls ${fall.toFixed(2)} m`)
+    if (depth + LIMITS.plinthSlack + 1e-6 < fall) shallow.push(`${name} reaches ${depth.toFixed(2)} m below its floor, ground falls ${fall.toFixed(2)} m`)
   }
   record(key, "inside", outside.length === 0, outside.join("; "))
   record(key, "ice", onIce.length === 0, onIce.length ? `on the ice: ${onIce.join(", ")}` : "")
