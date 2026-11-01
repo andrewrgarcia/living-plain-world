@@ -1,0 +1,5 @@
+{
+  "terrain": 1,
+  "chunk": 64,
+  "chunks": ["0_0"]
+}

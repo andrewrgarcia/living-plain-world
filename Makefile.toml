@@ -1,0 +1,28 @@
+# The living plain — the world's tasks (cargo-make: `makers <task>`).
+#
+#   makers gate     the checks every change to the world must pass
+#   makers faults   bad edits the gate must reject (and one good edit it must accept)
+#   makers view     what the engine reads before it builds
+#   makers spots    fair spots for a footprint: makers spots 0_0 6x7
+
+[config]
+skip_core_tasks = true
+
+[env]
+MOXI = { value = "moxi", condition = { env_not_set = ["MOXI"] } }
+
+[tasks.gate]
+command = "node"
+args = ["tools/gate.mjs"]
+
+[tasks.faults]
+command = "node"
+args = ["tools/faults.mjs"]
+
+[tasks.view]
+command = "node"
+args = ["tools/view.mjs"]
+
+[tasks.spots]
+command = "node"
+args = ["tools/view.mjs", "spots", "${@}"]
