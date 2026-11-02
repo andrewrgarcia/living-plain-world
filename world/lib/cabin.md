@@ -1,6 +1,6 @@
 # Cabin
 
-A small Nordic log cabin with a sod roof, a stone chimney and a plank door.
+A Nordic log cabin, sized for its visitor (2.3 m door, 3.4 m walls), with a sod roof, a stone chimney and a plank door.
 Hollow: a doorway in the front wall, a floor, room to stand inside. It
 stands on a stone plinth that reaches down 1.6 m, so on a slope the
 downhill side never floats. Placed by its `floor` anchor (the floor's
@@ -20,7 +20,7 @@ material Plank  { color = "#8a5f3a" }
 material Glass  { color = "#2b2f36", roughness = 0.2 }
 material Frame  { color = "#e8e2d4" }
 
-thing Cabin(w=5, h=2.8, d=4, wall=0.2, dw=0.95, dh=2.0) {
+thing Cabin(w=6.5, h=3.4, d=5.4, wall=0.22, dw=1.1, dh=2.3) {
     # walls, floor and ceiling: a box with its inside and a doorway cut out
     part Body {
         shape = difference(
@@ -40,19 +40,19 @@ thing Cabin(w=5, h=2.8, d=4, wall=0.2, dw=0.95, dh=2.0) {
         ),
         material = Sod
     }
-    part Chimney { shape = box(width=0.7, height=h * 0.9, depth=0.7), material = Stone }
+    part Chimney { shape = box(width=0.85, height=h * 0.9, depth=0.85), material = Stone }
     part Plinth  { shape = box(width=w + 0.4, height=1.6, depth=d + 0.4), material = Stone }
 
     # the doorstep, and the door hung on its hinge: a point at its bottom
     # hinge corner, so `twist` turns it about that corner's upright
-    part Step { shape = box(width=1.3, height=0.18, depth=0.5), material = Stone }
+    part Step { shape = box(width=1.6, height=0.18, depth=0.6), material = Stone }
     part Door { shape = box(width=dw, height=dh, depth=0.08), material = Plank }
 
     # windows on both sides, each a frame with dark glass
-    part FrameE { shape = box(width=0.08, height=0.9, depth=1.0), material = Frame }
-    part PaneE  { shape = box(width=0.06, height=0.75, depth=0.85), material = Glass }
-    part FrameW { shape = box(width=0.08, height=0.9, depth=1.0), material = Frame }
-    part PaneW  { shape = box(width=0.06, height=0.75, depth=0.85), material = Glass }
+    part FrameE { shape = box(width=0.08, height=1.15, depth=1.3), material = Frame }
+    part PaneE  { shape = box(width=0.06, height=0.95, depth=1.1), material = Glass }
+    part FrameW { shape = box(width=0.08, height=1.15, depth=1.3), material = Frame }
+    part PaneW  { shape = box(width=0.06, height=0.95, depth=1.1), material = Glass }
 
     relation {
         Roof.bottom    on Body.top
@@ -60,7 +60,7 @@ thing Cabin(w=5, h=2.8, d=4, wall=0.2, dw=0.95, dh=2.0) {
         Chimney.bottom on Body.top shift=(w * 0.28, -d * 0.15) gap=-0.2
         Step.south     on Body.north shift=(-(h / 2) + 0.09, 0)
         Door.point(x=-dw / 2, y=-dh / 2, z=0, nx=0, ny=-1, nz=0)
-            on Step.point(x=-dw / 2, y=0.09, z=-0.25 + wall / 2, nx=0, ny=1, nz=0)
+            on Step.point(x=-dw / 2, y=0.09, z=-0.3 + wall / 2, nx=0, ny=1, nz=0)
         FrameE.west    on Body.east shift=(0.2, 0)
         PaneE.west     on FrameE.east gap=-0.05
         FrameW.east    on Body.west shift=(0.2, 0)
