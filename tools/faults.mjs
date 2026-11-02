@@ -225,6 +225,16 @@ const CASES = [
     },
   },
   {
+    name: "the engine, signed as Claude, edits the terrain", expect: "guard",
+    edit(dir) {
+      const base = repo(dir)
+      const p = join(dir, "lib/terrain.mjs")
+      writeFileSync(p, readFileSync(p, "utf8").replace("export const RIVER = { half: 5.5,", "export const RIVER = { half: 4.5,"))
+      git(dir, "noreply@anthropic.com", "commit", "-q", "-am", "Day 1: narrow the river")
+      return { guard: base }
+    },
+  },
+  {
     name: "the engine edits the gate", expect: "guard",
     edit(dir) {
       const base = repo(dir)

@@ -49,6 +49,12 @@ const JSON_OUT = args.includes("--json")
 const MOXI = process.env.MOXI ?? "moxi"
 const ENGINE = (process.env.PLAIN_ENGINE_EMAIL ?? "living-plain-engine@users.noreply.github.com").toLowerCase()
 
+/** a commit is the engine's when it carries a day title ("Day N:", N ≥ 1 — by
+ *  RULES only the engine writes those) or an engine identity (its own address,
+ *  or the cloud session's Claude address, which a run may fall back to) */
+const ENGINE_IDS = [ENGINE, "noreply@anthropic.com"]
+const isEngine = (email, subject) => /^Day [1-9]\d*:/.test(subject ?? "") || ENGINE_IDS.includes((email ?? "").toLowerCase())
+
 /** the rules' numbers (RULES.md "The ground and the chunks") */
 export const LIMITS = { edge: 1, slope: 1.5, plinthSlack: 0.1 }
 
@@ -161,13 +167,13 @@ function checkLibrary() {
 function checkGuard(base) {
   let log
   try {
-    log = execFileSync("git", ["-C", ROOT, "log", "--format=%x1e%H%x1f%ae", "--name-only", `${base}..HEAD`], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })
+    log = execFileSync("git", ["-C", ROOT, "log", "--format=%x1e%H%x1f%ae%x1f%s", "--name-only", `${base}..HEAD`], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })
   } catch (e) { record("*", "guard", false, `git log ${base}..HEAD failed: ${String(e.stderr || e.message).trim()}`); return }
   const bad = []
   for (const chunk of log.split("\x1e").map((s) => s.trim()).filter(Boolean)) {
     const [head, ...files] = chunk.split("\n")
-    const [sha, email] = head.split("\x1f")
-    if (email.toLowerCase() !== ENGINE) continue
+    const [sha, email, subject] = head.split("\x1f")
+    if (!isEngine(email, subject)) continue
     for (const f of files.map((x) => x.trim()).filter(Boolean)) if (!f.startsWith("world/")) bad.push(`${sha.slice(0, 7)} touches ${f}`)
   }
   record("*", "guard", bad.length === 0, bad.length ? `engine commits outside world/: ${bad.join("; ")}` : "")
