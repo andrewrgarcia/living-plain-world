@@ -27,6 +27,12 @@ const ROOT = resolve(opt("--root") ?? ".")
 const MOXI = process.env.MOXI ?? "moxi"
 const ENGINE = (process.env.PLAIN_ENGINE_EMAIL ?? "living-plain-engine@users.noreply.github.com").toLowerCase()
 requireMoxi(MOXI)
+/** a commit is the engine's when it carries a day title ("Day N:", N ≥ 1 — by
+ *  RULES only the engine writes those) or an engine identity (its own address,
+ *  or the cloud session's Claude address, which a run may fall back to) */
+const ENGINE_IDS = [ENGINE, "noreply@anthropic.com"]
+const isEngine = (email, subject) => /^Day [1-9]\d*:/.test(subject ?? "") || ENGINE_IDS.includes((email ?? "").toLowerCase())
+
 const T = await import(pathToFileURL(join(ROOT, "lib/terrain.mjs")).href)
 const P = await import(pathToFileURL(join(ROOT, "lib/places.mjs")).href)
 
@@ -59,7 +65,7 @@ function standing(k) {
 function history(n) {
   try {
     const raw = execFileSync("git", ["-C", ROOT, "log", `-n${n}`, "--format=%aI%x1f%ae%x1f%s"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })
-    return raw.trim().split("\n").filter(Boolean).map((l) => { const [date, email, subject] = l.split("\x1f"); return { date, who: email.toLowerCase() === ENGINE ? "the Actions" : "The Architect", subject } })
+    return raw.trim().split("\n").filter(Boolean).map((l) => { const [date, email, subject] = l.split("\x1f"); return { date, who: isEngine(email, subject) ? "the Actions" : "The Architect", subject } })
   } catch { return [] }
 }
 
