@@ -15,6 +15,8 @@ Status: draft, 2026-10-29 (character added 2026-11-01). Every rule here is open 
   each step grows out of what is already there.
 - Day 0: the plain, the river, the snow, the pines, one cabin. Units are
   meters.
+- **Human scale.** Everything is built for its visitor, who stands 1.85 m:
+  doors at least 2.1 m, walls at least 2.8 m, a house 6–9 m on a side.
 - The world is endless and built in chunks (see "The ground and the
   chunks"). Built things live in `world/chunks/X_Z.md`; the things they
   are made of live in `world/lib/` as reusable parts (a wall, a roof, a
