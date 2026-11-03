@@ -1,0 +1,58 @@
+# Deploy the site after every change to the world.
+#
+# Any push to main here (an engine day, a skipped day, an Architect edit)
+# starts the site build in the private viewer repository (andrewrgarcia/
+# living-plain, workflow "world", mode live), which checks the world, builds
+# it and commits it there; Vercel deploys that. The site then shows the new
+# day a few minutes after the engine pushes it, whenever it runs.
+#
+# SAFEGUARDS (read before changing anything below)
+#
+#   Cost      Free: this repository is public, so its Actions minutes are
+#             free. The build it starts uses the viewer's free allowance
+#             (~3 minutes). No paid API, no Claude usage.
+#   Machine   Nothing runs on Andrew's computer: GitHub runs this and the
+#             build; Vercel serves the site.
+#   Secrets   SITE_DISPATCH_TOKEN: a fine-grained token that can only start
+#             workflows in andrewrgarcia/living-plain (Actions: read and
+#             write; no code, no other repository). It is never printed.
+#             GitHub does not hand secrets to pull requests from forks, and
+#             this runs only on pushes to main of this repository.
+#   Who       Runs only in andrewrgarcia/living-plain-world (forks do nothing).
+#   Failure   If this fails (token expired or revoked), nothing breaks: the
+#             daily scheduled build in the viewer still catches up, and
+#             GitHub mails the failure. The build itself checks everything
+#             (gate, guard, faults, smoke test) before the site changes.
+#   Record    This run's log here; the build's own record is the viewer's
+#             engine/runs.jsonl.
+#   Limits    5 minutes; one at a time.
+
+name: deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: github.repository == 'andrewrgarcia/living-plain-world'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Start the site build (living-plain · world · live)
+        env:
+          GH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::SITE_DISPATCH_TOKEN is not set: the site will wait for the viewer's daily scheduled build."
+            exit 1
+          fi
+          gh workflow run world.yml -R andrewrgarcia/living-plain -f mode=live
+          echo "Started the site build for ${GITHUB_SHA::7}: https://github.com/andrewrgarcia/living-plain/actions/workflows/world.yml" >> "$GITHUB_STEP_SUMMARY"
