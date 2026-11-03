@@ -54,5 +54,9 @@ jobs:
             echo "::error::SITE_DISPATCH_TOKEN is not set: the site will wait for the viewer's daily scheduled build."
             exit 1
           fi
-          gh workflow run world.yml -R andrewrgarcia/living-plain -f mode=live
+          # the REST call needs only "Actions: write" on the viewer
+          # (`gh workflow run` would also look up the default branch, which
+          # this token is deliberately not allowed to read)
+          gh api -X POST repos/andrewrgarcia/living-plain/actions/workflows/world.yml/dispatches \
+            -f ref=main -f 'inputs[mode]=live'
           echo "Started the site build for ${GITHUB_SHA::7}: https://github.com/andrewrgarcia/living-plain/actions/workflows/world.yml" >> "$GITHUB_STEP_SUMMARY"
