@@ -118,16 +118,22 @@ function spots(k, sx, sz) {
 
 // ── the view ───────────────────────────────────────────────────────────
 
+/** the world's calendar day (Lima, where The Architect lives and the engine
+ *  runs at dawn), YYYY-MM-DD. Not UTC: an evening commit in Lima is already
+ *  tomorrow in UTC, and the next dawn's run would think the day was done. */
+const ZONE = "America/Lima"
+const dayOf = (d) => new Date(d).toLocaleDateString("en-CA", { timeZone: ZONE })
+
 function view() {
   const day = nextDay()
   const hist = history(30)
-  const todayISO = new Date().toISOString().slice(0, 10)
-  const builtToday = hist.some((h) => h.who === "the Actions" && h.date.slice(0, 10) === todayISO)
+  const today = dayOf(Date.now())
+  const builtToday = hist.some((h) => h.who === "the Actions" && dayOf(h.date) === today)
   const L = []
   L.push(`# The plain, as the planner sees it`)
   L.push("")
   L.push(`- today is day ${day} (one past the last "Day N:" in the history)${day > 0 && day % 7 === 0 ? " — **a seventh day**: one structural move is allowed (RULES.md)" : ""}`)
-  if (builtToday) L.push(`- **the Actions already built today** (calendar, UTC): in live mode, do nothing and end the run; inceptions may run again`)
+  if (builtToday) L.push(`- **the Actions already built today** (calendar day in Lima): in live mode, do nothing and end the run; inceptions may run again`)
   L.push(`- terrain v${index.terrain}, chunks of ${index.chunk} m; built chunks: ${[...built].join(", ")}`)
   L.push(`- an ordinary day builds in one of: ${reachable().join(", ")}`)
   L.push(`- kept clear (world x, z): ${P.RESERVED.map((r) => `${r.name} ${r.x0}..${r.x1}, ${r.z0}..${r.z1}`).join("; ")}`)
@@ -149,7 +155,7 @@ function view() {
   }
   L.push("", `## The chronicle, newest first (last ${hist.length})`)
   if (!hist.length) L.push("- (no history yet)")
-  for (const h of hist) L.push(`- ${h.date.slice(0, 10)} · ${h.who} · ${h.subject}`)
+  for (const h of hist) L.push(`- ${dayOf(h.date)} · ${h.who} · ${h.subject}`)
   console.log(L.join("\n"))
 }
 
