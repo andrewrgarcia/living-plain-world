@@ -42,6 +42,12 @@ function scratch() {
 const chunkPath = (dir, key) => join(dir, "world/chunks", `${key}.md`)
 const readChunk = (dir, key = "0_0") => readFileSync(chunkPath(dir, key), "utf8")
 const writeChunk = (dir, text, key = "0_0") => writeFileSync(chunkPath(dir, key), text)
+/** a chunk key the world does not use yet (the world grows: a fixed key such
+ *  as 1_0 becomes a real chunk one day, and the case then tests the wrong thing) */
+const freeKey = (dir) => {
+  const used = new Set(JSON.parse(readFileSync(join(dir, "world/index.json"), "utf8")).chunks)
+  for (let n = 7; ; n++) if (!used.has(`${n}_${n}`)) return `${n}_${n}`
+}
 const editIndex = (dir, fn) => {
   const p = join(dir, "world/index.json")
   writeFileSync(p, JSON.stringify(fn(JSON.parse(readFileSync(p, "utf8")))) + "\n")
@@ -210,9 +216,9 @@ const CASES = [
   { name: "the script does not compile", expect: "compile", edit: (dir) => writeChunk(dir, addParts(readChunk(dir), ["part Broken { shape = box(width= }"])) },
   {
     name: "a chunk file is not in the index", expect: "index",
-    edit(dir) { writeChunk(dir, BASE.replace("# Chunk 0_0", "# Chunk 1_0"), "1_0") },
+    edit(dir) { const k = freeKey(dir); writeChunk(dir, BASE.replace("# Chunk 0_0", `# Chunk ${k}`), k) },
   },
-  { name: "the index lists a missing chunk", expect: "index", edit: (dir) => editIndex(dir, (i) => ({ ...i, chunks: [...i.chunks, "0_1"] })) },
+  { name: "the index lists a missing chunk", expect: "index", edit: (dir) => { const k = freeKey(dir); editIndex(dir, (i) => ({ ...i, chunks: [...i.chunks, k] })) } },
   { name: "the index changes the terrain", expect: "index", edit: (dir) => editIndex(dir, (i) => ({ ...i, terrain: i.terrain + 1 })) },
   {
     name: "the engine edits the terrain", expect: "guard",
