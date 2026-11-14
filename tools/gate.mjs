@@ -32,6 +32,16 @@
 //             0.5 m grain, parts thinner than ~0.25 m mesh to nothing
 //   clear     no two things' footprints overlap; none covers a reserved spot
 //             (the spawn, the Drafting Stone: lib/places.mjs)
+//   dug       a thing dug from a well's doorway (`Name.start on Well.adit`, a
+//             tunnel: lib/tunnel.md) is not placed on the Plot and is exempt
+//             from inside/ice/slope/plinth/clear (it is under them all); instead:
+//             its host is a well in the same chunk; it stays under the ground
+//             (2 m of earth over its roof everywhere); it does not reach past
+//             the chunk's edge; and its far end meets something — the doorway
+//             of another well in the chunk, or, on the chunk's edge, the end of
+//             a tunnel dug from the neighbouring chunk, at the same point and
+//             height (5 cm) and pointing back along it. Heights are where the
+//             viewer sets each well: on the highest ground under it, + 5 cm.
 // Exit code 0 when everything passes, 1 otherwise.
 
 import { execFileSync } from "node:child_process"
@@ -118,13 +128,15 @@ function checkChunk(key) {
   const text = readFileSync(script, "utf8")
   const coarse = ungrained(text).filter((n) => n !== "Chunk")
   record(key, "grain", coarse.length === 0, coarse.length ? `no \`resolve grain\` of its own: ${coarse.join(", ")}` : "")
-  const unplaced = [...built.keys()].filter((name) => !new RegExp(`\\b${name}\\.floor\\s+on\\s+Plot\\.point\\(\\s*x\\s*=\\s*-?[\\d.]+\\s*,\\s*y\\s*=\\s*0(\\.0+)?\\s*,`).test(text))
+  const dug = dugThings(text, built)
+  const unplaced = [...built.keys()].filter((name) => !dug.has(name)).filter((name) => !new RegExp(`\\b${name}\\.floor\\s+on\\s+Plot\\.point\\(\\s*x\\s*=\\s*-?[\\d.]+\\s*,\\s*y\\s*=\\s*0(\\.0+)?\\s*,`).test(text))
   record(key, "placed", unplaced.length === 0, unplaced.length ? `not hung by its floor on the Plot at y = 0: ${unplaced.join(", ")}` : "")
 
   const half = T.CHUNK / 2 - LIMITS.edge
   const outside = [], onIce = [], steep = [], shallow = [], crowded = []
   const prints = []
   for (const [name, parts] of built) {
+    if (dug.has(name)) continue
     const b = bounds(parts)
     if (b.x0 < -half || b.x1 > half || b.z0 < -half || b.z1 > half)
       outside.push(`${name} spans x ${b.x0.toFixed(1)}..${b.x1.toFixed(1)}, z ${b.z0.toFixed(1)}..${b.z1.toFixed(1)} (limit ±${half})`)
@@ -147,6 +159,117 @@ function checkChunk(key) {
   record(key, "slope", steep.length === 0, steep.join("; "))
   record(key, "plinth", shallow.length === 0, shallow.join("; "))
   record(key, "clear", crowded.length === 0, crowded.join("; "))
+  if (dug.size) checkDug(key, built, dug)
+}
+
+// ── what is dug: tunnels off a well's foot ─────────────────────────────
+
+/** things hung by their `start` on another thing's doorway: name → host */
+function dugThings(text, built) {
+  const out = new Map()
+  for (const name of built.keys()) {
+    const m = text.match(new RegExp(`\\b${name}\\.start\\s+on\\s+(\\w+)\\.(adit2?)\\b`))
+    if (m) out.set(name, { host: m[1], door: m[2] })
+  }
+  return out
+}
+
+/** where the viewer sets a thing's floor: the highest ground under it + 5 cm (world y) */
+function floorOf(parts, ox, oz) {
+  const b = bounds(parts)
+  let hi = -Infinity
+  for (const [x, z] of sampleFootprint({ x0: b.x0 + ox, x1: b.x1 + ox, z0: b.z0 + oz, z1: b.z1 + oz })) hi = Math.max(hi, T.height(x, z))
+  return hi + 0.05
+}
+
+const gidx = (p) => +(p.name.match(/Gallery\[(\d+)\]$/)?.[1] ?? -1)
+
+/** a dug thing's far opening (the middle of its last gallery's far end, world
+ *  coordinates) and the way it points; its galleries; its host's floor */
+function dugEnd(key, built, name, host) {
+  const [cx, cz] = key.split("_").map(Number)
+  const [ox, oz] = T.chunkCenter(cx, cz)
+  const parts = built.get(name)
+  const gs = parts.filter((p) => gidx(p) >= 0).sort((a, b) => gidx(a) - gidx(b))
+  if (!gs.length || !built.has(host)) return null
+  const last = gs[gs.length - 1], f = last.front, d = last.size[2] / 2
+  const floor = floorOf(built.get(host), ox, oz)
+  return {
+    key, name, floor, galleries: gs, ox, oz,
+    at: [last.center[0] + f[0] * d + ox, last.center[1] + f[1] * d + floor, last.center[2] + f[2] * d + oz],
+    local: [last.center[0] + f[0] * d, last.center[2] + f[2] * d],
+    dir: f,
+  }
+}
+
+const reports = new Map()
+/** a chunk's built things and dug things, read once */
+function chunkThings(key) {
+  if (reports.has(key)) return reports.get(key)
+  let out = null
+  const script = join(ROOT, "world/chunks", `${key}.md`)
+  if (existsSync(script)) {
+    try {
+      const { things: built } = things(readReport(MOXI, script))
+      out = { built, dug: dugThings(readFileSync(script, "utf8"), built) }
+    } catch {}
+  }
+  reports.set(key, out)
+  return out
+}
+
+function checkDug(key, built, dug) {
+  const problems = []
+  const edge = T.CHUNK / 2
+  for (const [name, { host }] of dug) {
+    if (!built.has(host) || dug.has(host)) { problems.push(`${name} hangs from ${host}, which is not a well built in this chunk`); continue }
+    const e = dugEnd(key, built, name, host)
+    if (!e) { problems.push(`${name} has no galleries`); continue }
+    const b = bounds(built.get(name))
+    if (b.x0 < -edge - 0.5 || b.x1 > edge + 0.5 || b.z0 < -edge - 0.5 || b.z1 > edge + 0.5)
+      problems.push(`${name} reaches past the chunk's edge (x ${b.x0.toFixed(1)}..${b.x1.toFixed(1)}, z ${b.z0.toFixed(1)}..${b.z1.toFixed(1)})`)
+    // under the ground: 2 m of earth over every gallery's roof
+    for (const g of e.galleries) {
+      const gb = bounds([g])
+      let lo = Infinity
+      for (const [x, z] of sampleFootprint({ x0: gb.x0 + e.ox, x1: gb.x1 + e.ox, z0: gb.z0 + e.oz, z1: gb.z1 + e.oz })) lo = Math.min(lo, T.height(x, z))
+      const cover = lo - (gb.y1 + e.floor)
+      if (cover < 2) { problems.push(`${name}: only ${cover.toFixed(1)} m of earth over ${g.name.slice(name.length + 1)}`); break }
+    }
+    // the far end meets a doorway here, or a tunnel from the next chunk
+    const [lx, lz] = e.local
+    const onEdge = Math.abs(lx) > edge - 0.05 || Math.abs(lz) > edge - 0.05
+    if (onEdge) {
+      const [cx, cz] = key.split("_").map(Number)
+      const nk = Math.abs(lx) > edge - 0.05 ? `${cx + Math.sign(lx)}_${cz}` : `${cx}_${cz + Math.sign(lz)}`
+      const other = chunkThings(nk)
+      let best = null
+      if (other) for (const [on, { host: oh }] of other.dug) {
+        const oe = dugEnd(nk, other.built, on, oh)
+        if (!oe) continue
+        const gap = Math.hypot(oe.at[0] - e.at[0], oe.at[2] - e.at[2]), dy = oe.at[1] - e.at[1]
+        const back = oe.dir[0] * e.dir[0] + oe.dir[1] * e.dir[1] + oe.dir[2] * e.dir[2]
+        if (!best || gap < best.gap) best = { on, gap, dy, back }
+      }
+      if (!best) problems.push(`${name} stops at the edge toward ${nk}, but no tunnel is dug there to meet it`)
+      else if (best.gap > 0.05 || Math.abs(best.dy) > 0.05 || best.back > -0.999)
+        problems.push(`${name} misses ${nk}'s ${best.on} at the edge: ${best.gap.toFixed(2)} m apart, ${best.dy.toFixed(2)} m in height, ${(Math.acos(Math.max(-1, Math.min(1, -best.back))) * 180 / Math.PI).toFixed(1)}° off line`)
+    } else {
+      // another well's doorway in this chunk: its bore's wall, at its doorway's height
+      let ok = false
+      for (const [wn, wparts] of built) {
+        if (wn === host || dug.has(wn)) continue
+        const shaft = wparts.find((p) => p.name === `${wn}.Shaft`)
+        if (!shaft) continue
+        const wfloor = floorOf(wparts, e.ox, e.oz)
+        const r = Math.hypot(e.local[0] - shaft.center[0], e.local[1] - shaft.center[2])
+        const door = wfloor - shaft.size[1] + 1.45
+        if (Math.abs(r - shaft.size[0] / 2) < 0.15 && Math.abs(e.at[1] - door) < 0.05) ok = true
+      }
+      if (!ok) problems.push(`${name}'s far end meets neither another well's doorway nor the chunk's edge (it ends at x ${lx.toFixed(2)}, z ${lz.toFixed(2)})`)
+    }
+  }
+  record(key, "dug", problems.length === 0, problems.join("; "))
 }
 
 /** the things a script defines without a `resolve grain` of their own */
