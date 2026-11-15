@@ -14,4 +14,4 @@ in at any time; his changes go through the same gate.
 
 Every commit here is a day. `git log` is the chronicle.
 
-Needs Moxi 0.7+ (`cargo install moxi`) and Node 18+.
+Needs Moxi 0.9+ (`cargo install --git https://github.com/moxilang/moxi --tag v0.9.0 --locked moxi`) and Node 18+.

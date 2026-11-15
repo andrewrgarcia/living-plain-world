@@ -3,15 +3,15 @@
 
 import { execFileSync } from "node:child_process"
 
-/** stop with a plain message unless `moxi` is there and at least 0.7 (`resolve grain`, instance grain) */
+/** stop with a plain message unless `moxi` is there and at least 0.9 (guides, marks) */
 export function requireMoxi(moxi) {
   let v = ""
   try { v = execFileSync(moxi, ["--version"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim() } catch {}
   const m = v.match(/(\d+)\.(\d+)\.(\d+)/)
-  if (m && (+m[1] > 0 || +m[2] >= 7)) return
+  if (m && (+m[1] > 0 || +m[2] >= 9)) return
   console.error(v
-    ? `${moxi} is ${v}; the world needs moxi 0.7 or newer. Update it: cargo install moxi --force`
-    : `no moxi found (MOXI=${moxi}). Install it: cargo install moxi`)
+    ? `${moxi} is ${v}; the world needs moxi 0.9 or newer. Update it: cargo install --git https://github.com/moxilang/moxi --tag v0.9.0 --locked --force moxi`
+    : `no moxi found (MOXI=${moxi}). Install it: cargo install --git https://github.com/moxilang/moxi --tag v0.9.0 --locked moxi`)
   process.exit(2)
 }
 

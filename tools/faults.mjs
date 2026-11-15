@@ -168,7 +168,7 @@ const CASES = [
     edit(dir) { writeChunk(dir, readChunk(dir).replace(HOME, (m) => m.replace("y=0,", "y=-3,"))) },
   },
   {
-    name: "a one-off thing at the chunk's coarse grain", expect: "grain",
+    name: "a one-off thing at the chunk's coarse grain", expect: ["grain", "compile"], // moxi 0.8.1+ refuses the thin bar itself
     edit(dir) {
       const s = findSpot(hutOff, [[0, 0]], (g) => !g.ice && !g.reserved && g.fall < 0.3 && clearOfHome(g))
       const RAIL = `thing Rail {
@@ -304,10 +304,10 @@ for (const c of [...CASES, GOOD]) {
     gate = runGate(dir, guard)
   } catch (e) { error = e.message }
   const failed = gate ? gate.results.filter((r) => !r.ok) : []
-  const caught = failed.find((r) => r.check === c.expect)
+  const caught = failed.find((r) => [].concat(c.expect).includes(r.check))
   const ok = !error && (c.expect ? !gate.ok && !!caught : gate.ok)
   outcomes.push({
-    name: c.name, expect: c.expect ?? "pass", ok, note, error,
+    name: c.name, expect: [].concat(c.expect ?? "pass").join("|"), ok, note, error,
     failed: failed.map((r) => `${r.chunk} ${r.check}: ${r.detail}`),
     dir: KEEP ? dir : undefined,
   })
