@@ -53,6 +53,13 @@ Status: draft, 2026-10-29 (character added 2026-11-01). Every rule here is open 
   has something built, or in its neighbor. Opening a chunk that touches no
   built chunk is a seventh-day move. The settlement grows outward; it does
   not scatter.
+- **Under the ground.** A thing dug from a well's doorway (a tunnel,
+  `world/lib/tunnel.md`) hangs from the well, not from the Plot, and goes
+  where nothing on the surface is in its way. Its far end must meet
+  something: another well's doorway, or, on the chunk's edge, the end of a
+  tunnel dug from the neighboring chunk. A tunnel that crosses the edge is
+  one edit made in both chunks the same day, a half on each side; the gate
+  checks the halves meet.
 - **What the planner reads.** The index, the chunk it is editing and that
   chunk's neighbors, never the whole world: its view stays the same size on
   day 900 as on day 1.
