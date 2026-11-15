@@ -39,7 +39,7 @@
 //             (2 m of earth over its roof everywhere); it does not reach past
 //             the chunk's edge; and its far end meets something — the doorway
 //             of another well in the chunk, or, on the chunk's edge, the end of
-//             a tunnel dug from the neighbouring chunk, at the same point and
+//             a tunnel dug from the neighboring chunk, at the same point and
 //             height (5 cm) and pointing back along it. Heights are where the
 //             viewer sets each well: on the highest ground under it, + 5 cm.
 // Exit code 0 when everything passes, 1 otherwise.

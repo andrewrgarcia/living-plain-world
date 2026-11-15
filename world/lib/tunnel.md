@@ -46,7 +46,9 @@ thing Tunnel(run=10, rise=0, w=1.6, h=2.3, wall=0.3, every=8) {
     let slope = 57.29578 * g / (1 + 0.28 * g * g)
     let lamps = max(1, floor(run / every))
 
-    part Mouth { shape = box(width=w + 2 * wall, height=h + 2 * wall, depth=0.02), material = Earth }
+    # where it is hung on the doorway: a sheet too thin to build (it meshes to
+    # nothing), so the gallery starts right at the doorway
+    part Mouth { shape = box(width=w + 2 * wall, height=h + 2 * wall, depth=0.001), material = Earth }
     part Gallery[0] {
         shape = difference(box(width=w + 2 * wall, height=h + 2 * wall, depth=len), box(width=w, height=h, depth=len + 0.4)),
         material = Earth

@@ -180,6 +180,27 @@ const CASES = [
       writeChunk(dir, addRelations(addParts(addThings(readChunk(dir), RAIL), ["part Fence { thing = Rail }"]), [`Fence.floor on ${at(s.x, s.z)}`]))
     },
   },
+  // tunnels (lib/tunnel.md): the kariz dug in halves from the cabin's well
+  // (0_0) and the field well (1_0) meets on the chunks' edge
+  {
+    name: "a tunnel's other half is not dug", expect: "dug",
+    edit(dir) {
+      const t = must(readChunk(dir, "1_0"), "Kariz.start on FieldWell.adit")
+      writeChunk(dir, t.replace(/\n\s*part Kariz \{[^\n]*\}/, "").replace(/\n\s*Kariz\.start on FieldWell\.adit/, ""), "1_0")
+    },
+  },
+  {
+    name: "a tunnel's doorway points the wrong way", expect: "dug",
+    edit: (dir) => writeChunk(dir, must(readChunk(dir), "Well(adit=74.29)").replace("Well(adit=74.29)", "Well(adit=70)")),
+  },
+  {
+    name: "a tunnel stops short of anything", expect: "dug",
+    edit: (dir) => writeChunk(dir, must(readChunk(dir), "Tunnel(run=15.27,").replace("Tunnel(run=15.27,", "Tunnel(run=9,")),
+  },
+  {
+    name: "a tunnel runs too near the surface", expect: "dug",
+    edit: (dir) => writeChunk(dir, must(readChunk(dir), "Well(adit=74.29)").replace("Well(adit=74.29)", "Well(adit=74.29, depth=3)")),
+  },
   { name: "a thing crosses the chunk's edge", expect: "inside", edit: (dir) => writeChunk(dir, moveHome(readChunk(dir), 30, homeAt[1])) },
   {
     name: "a thing stands on the ice", expect: "ice",
