@@ -3,7 +3,7 @@
 Working title: **the living plain**. A world written in Moxi that a scheduled
 job edits once a day. Nobody hand-edits the world; people edit these rules.
 
-Status: draft, 2026-10-29 (character added 2026-11-01). Every rule here is open to change by Andrew.
+Status: draft, 2026-10-29 (character added 2026-11-01, paint 2026-11-15). Every rule here is open to change by Andrew.
 
 ## The world
 
@@ -83,6 +83,32 @@ Status: draft, 2026-10-29 (character added 2026-11-01). Every rule here is open 
    the day is skipped and the chronicle says so. A skipped day is kept.
 4. **Chronicle.** The commit message is one line of the world's history, in
    plain words: "Day 41: a footbridge across the east bank, for the mill."
+
+## Paint
+
+A thing can be painted. Since Moxi 0.9 a **mark** is flat paint lying on
+one face of a part: an outline (`oval`, `rect`, `poly`, or a `band` around
+it) in a material, with no depth of its own. It goes where it is placed and
+moves with its part (a mark on a door swings with the door).
+
+- **Paint what is painted, build what has depth.** A barn door's white X, a
+  falu-red trim, the dark glass of a window, a ring of color around a post,
+  lichen on a stone: marks. A step, a handle, a beam, a shutter: shapes.
+- **On the face people see.** A part's `north` anchor is its own front, which
+  is not the plain's north: the byre's door side is its `Body.north`, and it
+  faces south on the map. Put the paint on the face the door, the wall or the
+  stone shows to the visitor, and check which way that is in
+  `moxi report --json`: the host part's `front` is the direction its `north`
+  face points; on the map, +z is south, −z north, +x east, −x west.
+- **A few, not dozens.** Paint is a detail. A thing gets a handful of marks;
+  a pattern made of thirty marks is a shape trying to be paint.
+- **No words, no pictures.** Paint is shapes and color: no letters, numbers or
+  signs that read, no images (Moxi can lay a picture as a mark; the plain does
+  not), nothing that names or imitates a real place, brand or person.
+- Colors are the world's palette, as for shapes: chalk, falu red, ochre, soot,
+  moss. No neon.
+- Painting a thing that is there (adding or changing its marks) is **change
+  one thing**: one day's edit.
 
 ## Motion is earned
 
