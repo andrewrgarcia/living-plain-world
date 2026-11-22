@@ -46,7 +46,7 @@ Status: draft, 2026-10-29 (character added 2026-11-01, paint 2026-11-15). Every 
 - **A thing belongs to the chunk its origin is in** and must fit inside that
   chunk, at least 1 m from its edges. It never stands on the ice, on another
   thing, or on a reserved spot (where the visitor arrives, the Drafting
-  Stone: `lib/places.mjs`).
+  Stone, the Kodomata ship: `lib/places.mjs`).
 - **Nature yields to building.** No pine grows inside a built thing's
   footprint (plus 3 m).
 - **Where the engine builds.** On an ordinary day, in a chunk that already
