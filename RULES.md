@@ -3,7 +3,7 @@
 Working title: **the living plain**. A world written in Moxi that a scheduled
 job edits once a day. Nobody hand-edits the world; people edit these rules.
 
-Status: draft, 2026-10-29 (character added 2026-11-01, paint 2026-11-15). Every rule here is open to change by Andrew.
+Status: draft, 2026-10-29 (character added 2026-11-01, paint 2026-11-15, the Kodomata world 2026-11-22). Every rule here is open to change by Andrew.
 
 ## The world
 
@@ -140,6 +140,44 @@ Once a week the planner may make one structural move instead of a normal edit:
 
 Demolition is what stops the world from becoming a pile. Growth only, and it
 becomes a heap; a world that tears down its granary for an aqueduct is alive.
+
+## The Kodomata world
+
+Draft, 2026-11-22. The Architect's defaults; open to change by Andrew.
+
+- **A second world.** The Kodomata's ship lies crashed on the plain; it flies
+  the visitor to the Kodomata's own world and back. That world has its own
+  ground, sky and coordinates (the ship's pad at the origin) and its own
+  inhabitants, the Kodomata, whom the viewer keeps alive as a swarm. It is
+  described in `world/kodomata/README.md`.
+- **Its nature is frozen**, like the plain's: the ground, and where the range
+  and the trees stand, are `lib/kodomata.mjs`; the range, the grove, the lone
+  tree, the planet's rings and the creature are Moxi scripts in
+  `world/kodomata/`. They are The Architect's; the engine never edits them
+  (it may import their parts: `lib/rock.md`'s mountain components, the
+  grove's `Tree` and `Nerve`).
+- **Character.** Alien, not storybook and not human. Smooth, carved,
+  repeated forms (blended unions, cut caves, parametric repetition: what
+  Moxi does well), never low-poly. The palette is the world's own: rust,
+  deep purple, magenta, mauve, snow, indigo, khaki; the forest is bone and
+  magenta. No cabins, no fences, no Nordic or modern human building. What
+  stands there is the Kodomata's: mounds and dens dug into the dunes, nerve
+  bridges, standing stones, beacons, shelters under the roots.
+- **Scale.** A Kodomata stands about 1.2 m. Anything meant to be entered
+  still admits the visitor (1.85 m): a way in at least 2.1 m high.
+- **Room to live.** The Kodomata walk freely around the pad and among the
+  groves. Nothing built stands on the pad (`RESERVED` in `lib/kodomata.mjs`),
+  on the range, or on a trunk, and nothing fences them in. The trees may
+  become their food; nothing built may cut them down.
+- **Building there** (not open yet: the gate, the planner's view and the
+  viewer's chunk streamer read only the plain). Once open, the day's rules
+  hold for both worlds together: one edit a day, in one world. The planner
+  names the world in its sentence of intent and leans toward the one that
+  has gone longer without an edit. The Kodomata world's chunks are
+  `world/kodomata/chunks/X_Z.md` (64 m squares centered on the pad), listed
+  in `world/kodomata/index.json`; the gate judges them on that world's
+  ground, with the same checks. The seventh day may make its structural
+  move in either world.
 
 ## The Architect
 
