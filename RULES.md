@@ -210,14 +210,15 @@ morning.
 
 In the world, the chronicle is read at **the Drafting Stone**: a block of
 marble with a square, a compass, papers and a pen on it, standing where day
-0 began. In the Kodomata world it is read at **the Monolith**: a blade of
-deep-purple stone 8 m tall near the pad, with an eye cut through it where an
-orb of magenta light hangs inside two rings. Both belong to the viewer, not
+0 began. In the Kodomata world it is read at **the Monolith**: three
+horns of dark stone near the pad, grown from one knot of roots, wound
+around each other and reaching for the sky, with an orb of magenta light
+and its two rings cradled where they part. Both belong to the viewer, not
 the world: the planner cannot move, copy or build on them.
 
 ## What the visitor can do with things
 
-Three ways a thing in the world can act, so a new thing works without
+Four ways a thing in the world can act, so a new thing works without
 touching the viewer:
 
 - **Pushable:** a part named `…Door` with a Moxi `joint` swings when the
@@ -225,6 +226,10 @@ touching the viewer:
 - **Usable:** Enter within reach, or a click. (The Drafting Stone is the
   first. The builder's `Use…` actions will go through the same door.)
 - **Timed:** states named `….Lit` turn on at night.
+- **Haulable:** a thing whose instance is named `…Sledge` or `…Cart` (the
+  hay sledge's `Sledge`) can be taken by either end of its length with
+  Space and pulled along behind the visitor; Space again lets go and it
+  stays there. Only for that visit: the world's files never change.
 
 ## What the planner must never do
 
