@@ -166,7 +166,7 @@ Draft, 2026-11-22. The Architect's defaults; open to change by Andrew.
 - **Scale.** A Kodomata stands about 1.2 m. Anything meant to be entered
   still admits the visitor (1.85 m): a way in at least 2.1 m high.
 - **Room to live.** The Kodomata walk freely around the pad and among the
-  groves. Nothing built stands on the pad or by the Monolith (`RESERVED`
+  groves. Nothing built stands on the pad, by the Monolith or by the Tally (`RESERVED`
   in `lib/kodomata.mjs`), on the range, or on a trunk, and nothing fences
   them in. The trees may
   become their food; nothing built may cut them down.
@@ -213,8 +213,10 @@ marble with a square, a compass, papers and a pen on it, standing where day
 0 began. In the Kodomata world it is read at **the Monolith**: three
 horns of dark stone near the pad, grown from one knot of roots, wound
 around each other and reaching for the sky, with an orb of magenta light
-and its two rings cradled where they part. Both belong to the viewer, not
-the world: the planner cannot move, copy or build on them.
+and its two rings cradled where they part. Across from it stands **the
+Tally**, the census: a frond curled like a fern, one bud lit for each
+Kodomata alive. All three belong to the viewer, not the world: the planner
+cannot move, copy or build on them.
 
 ## What the visitor can do with things
 
@@ -235,7 +237,7 @@ touching the viewer:
 
 - name or imitate a real place, brand or person
 - edit these rules, the gate, or the workflow
-- move, copy or build on the Drafting Stone or the Monolith, or touch the visitor (the pill)
+- move, copy or build on the Drafting Stone, the Monolith or the Tally, or touch the visitor (the pill)
 - make more than one edit in a day
 - rewrite history (no force-push, no amending past days)
 
