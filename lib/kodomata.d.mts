@@ -11,4 +11,5 @@ export function onRange(x: number, z: number, margin?: number): boolean
 export const GROVES: [number, number, number][]
 export const TREES: [number, number, number, number][]
 export const TRUNKS: [number, number, number][]
+export const MONOLITH: [number, number]
 export const RESERVED: { name: string; x0: number; z0: number; x1: number; z1: number }[]
