@@ -68,6 +68,9 @@ thing Kodomata(leg=0.17, eye=0.108, peg=0.155, girth=1.28, neck=0, head=1.0, tal
     # the connector: a shallow arc, 0.22 wide (times the head), its ends
     # 0.022 higher than its middle; drawn as two halves (a poly must go once
     # round its own middle, and a whole arc this curved does not)
+    # the mouth: hidden inside the connector line until it eats, when the
+    # line opens into a round dark mouth (pose Open)
+    part Mouth  { mark = oval(width=0.12 * head, height=0.005), material = Ink }
     part LineR  { mark = poly(points=[[0.062 * head, 0.0024], [0.0443 * head, 0.002], [0.0266 * head, 0.0028], [0.0089 * head, 0.0048], [-0.0089 * head, 0.0079], [-0.0266 * head, 0.0121], [-0.0443 * head, 0.0175], [-0.062 * head, 0.024], [-0.062 * head, 0.0116], [-0.0443 * head, 0.0051], [-0.0266 * head, -0.0003], [-0.0089 * head, -0.0045], [0.0089 * head, -0.0076], [0.0266 * head, -0.0096], [0.0443 * head, -0.0104], [0.062 * head, -0.01]]), material = Ink }
     part LineL  { mark = poly(points=[[-0.062 * head, -0.01], [-0.0443 * head, -0.0104], [-0.0266 * head, -0.0096], [-0.0089 * head, -0.0076], [0.0089 * head, -0.0045], [0.0266 * head, -0.0003], [0.0443 * head, 0.0051], [0.062 * head, 0.0116], [0.062 * head, 0.024], [0.0443 * head, 0.0175], [0.0266 * head, 0.0121], [0.0089 * head, 0.0079], [-0.0089 * head, 0.0048], [-0.0266 * head, 0.0028], [-0.0443 * head, 0.002], [-0.062 * head, 0.0024]]), material = Ink }
 
@@ -97,6 +100,7 @@ thing Kodomata(leg=0.17, eye=0.108, peg=0.155, girth=1.28, neck=0, head=1.0, tal
         GlowL  on EyeL.center shift=(-eye * 0.68, 0)
         CheekR on Head.surface(yaw=-50, pitch=-27)
         CheekL on Head.surface(yaw=50, pitch=-27)
+        Mouth  on Head.point(x=0, y=line_y - 0.002, z=0.36 * head * sqrt(1 - pow(line_y / (0.33 * head), 2)), nx=0, ny=0, nz=1)
         LineR  on Head.point(x=-half, y=arc_y, z=arc_z, nx=0, ny=0, nz=1)
         LineL  on Head.point(x=half, y=arc_y, z=arc_z, nx=0, ny=0, nz=1)
 
@@ -128,6 +132,10 @@ thing Kodomata(leg=0.17, eye=0.108, peg=0.155, girth=1.28, neck=0, head=1.0, tal
     pose HiA { ArmR lean=(55, 0) }
     pose HiB { ArmR lean=(20, 0) }
     animate Wave { 0 rest  0.22 HiA  0.42 HiB  0.62 HiA  0.82 HiB  1.02 HiA  1.3 rest }
+
+    # eating: the line opens into a mouth and shuts, three bites
+    pose Open { Mouth height=0.13 * head }
+    animate Eat { 0 rest  0.14 Open  0.32 rest  0.48 Open  0.66 rest  0.82 Open  1.05 rest }
 
     resolve grain = 0.007
 }

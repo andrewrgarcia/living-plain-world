@@ -32,11 +32,21 @@ viewer's `/kodomata` page.
   magenta nerves, about 180 m across and 90 m tall, twelve of them east of
   the pad; and `tree.md`, a lone tree built from the grove's own parts, 64 of
   them all around.
+- **The fruit** — `fruit.md`: a peach half a meter across that the nerves
+  bear at their hanging ends. On the trees near the pad it grows, ripens
+  and falls, by itself or when the visitor flies up to it; fallen fruit can
+  be carried. It is what the Kodomata eat.
 - **The Kodomata** — `kodomata.md`: the creature. Three kinds (standard,
   longneck, tumble) and 243 bodies, each grown from one creature's genes.
   The viewer runs them as a living swarm: they walk, blink, meet, say hi to
-  each other and to the visitor, mate and are born. Each visit finds a new
-  swarm; nothing about them is stored.
+  each other and to the visitor, mate and are born. They get hungry (never
+  starve): a hungry one smells fallen fruit, trots to it and eats, the line
+  between its eyes opening into a mouth; it remembers where it ate and
+  calls, and the hungry who hear it learn the place. Each has a voice of
+  its own, from its genes. The newborn are small and grow up in a few
+  minutes, keeping near a parent. Each has two names and a hash; a card
+  shows them, and the Tally by the pad counts them all. Each visit finds a
+  new swarm; nothing about them is stored.
 
 Where each of these stands is in `lib/kodomata.mjs` (the range's bearing and
 distance from the pad, the seeds the groves and the trees are scattered
